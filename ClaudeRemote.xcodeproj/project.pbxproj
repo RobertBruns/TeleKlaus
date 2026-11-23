@@ -8,12 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		A00000000000000000000016 /* ClaudeRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000012 /* ClaudeRemote.swift */; };
+		B8E8074D6FD74BA480CAC6C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B0160A57F6024088BFDBF96A /* Assets.xcassets */; };
+		FE167CF0B35E44BBB4671E7E /* Lucide-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7E9829A8C27549529A0C22B2 /* Lucide-LICENSE.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A00000000000000000000009 /* ClaudeRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = ClaudeRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00000000000000000000012 /* ClaudeRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeRemote.swift; sourceTree = "<group>"; };
 		A00000000000000000000013 /* ClaudeRemote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClaudeRemote.entitlements; sourceTree = "<group>"; };
+		B0160A57F6024088BFDBF96A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
+		7E9829A8C27549529A0C22B2 /* Lucide-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Lucide-LICENSE.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -36,6 +40,8 @@
 		A00000000000000000000008 /* ClaudeRemote */ = {
 			isa = PBXGroup;
 			children = (
+				B0160A57F6024088BFDBF96A /* Assets.xcassets */,
+				7E9829A8C27549529A0C22B2 /* Lucide-LICENSE.txt */,
 				A00000000000000000000012 /* ClaudeRemote.swift */,
 				A00000000000000000000013 /* ClaudeRemote.entitlements */,
 			);
@@ -50,6 +56,7 @@
 			buildConfigurationList = A00000000000000000000010 /* Build configuration list for PBXNativeTarget "ClaudeRemote" */;
 			buildPhases = (
 				A00000000000000000000011 /* Sources */,
+				6AFF3A27EAF64586AE1E2C38 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -85,6 +92,18 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		6AFF3A27EAF64586AE1E2C38 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B8E8074D6FD74BA480CAC6C3 /* Assets.xcassets in Resources */,
+				FE167CF0B35E44BBB4671E7E /* Lucide-LICENSE.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A00000000000000000000011 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -117,6 +136,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APS_ENVIRONMENT = development;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = ClaudeRemote/ClaudeRemote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -136,6 +156,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APS_ENVIRONMENT = production;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = ClaudeRemote/ClaudeRemote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
