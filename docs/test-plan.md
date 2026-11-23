@@ -1,0 +1,9 @@
+# Abnahmetests
+
+1. M0-Sonde mit `scripts/resume-probe.py --help` starten. Das verifizierte Ergebnis enthält die Session-ID und zwei Quittungen. Der Test überbrückt beide Hosts per SSH und nutzt einen flüchtigen SQLite-Dispatcher.
+2. Backend-Tests prüfen zwei Session-IDs, Rollen, Batch-Deduplizierung, Zuordnung, einen SQLite-Wiederanlauf und wiederholte Acks.
+3. Mit `python -B scripts/demo-two-sessions.py --dev paule@capella.uberspace.de --project repositories/test-repo` den kombinierten Versuch wiederholen. Die beiden tatsächlichen Claude-Prozesse laufen auf Capella. FastAPI, SQLite und die Agent-Zustandslogik laufen auf dem Testrechner. Ein direkter TestClient ersetzt den HTTPS-Transport zur API. Am 21. November 2026 blieben beide Session-IDs getrennt. Die doppelt eingereichte Entscheidung `08e281a7-ed82-4fc2-b5df-e8b8903c5dd4` wurde nach Neustart des API-Testclients nur Session `2c6ad906-66a2-48de-a22d-1c1fa0d999f2` zugestellt und quittiert. Die zweite Session blieb offen.
+4. Im später installierten HTTPS-System zwei verwaltete Jobs mit separaten Statusverzeichnissen im freigegebenen Testprojekt starten. Beide mit unterschiedlichen Fragen registrieren und nur den Batch des ersten Jobs beantworten. Prüfen, dass sein Status auf bestätigt wechselt und der andere Batch offen bleibt.
+5. API und Agent vor Zustellung und nach lokaler Bestätigung neu starten. In der API jeweils nur einen Entscheidungs- und Ack-Event erwarten. Bei einem Crash innerhalb des Claude-Turns muss die Verarbeitung anhalten und die unklare Entscheidung identifizieren.
+6. Mit einem signierten iPhone registrieren und die Push-Zustellung für Frage, Abschluss und Fehler prüfen. Payload auf opake ID und generischen Alert inspizieren. Ein Nutzer ohne gültiges Token darf keine Daten abrufen.
+7. M2 prüft Sprachqualität, Anrufannahme, verpassten Anruf, begrenzte Wiederholung und Fortsetzung unabhängiger Arbeit.

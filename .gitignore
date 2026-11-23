@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Python (agent/, backend/, scripts/)
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Lokale Konfiguration und Geheimnisse (Vorlage: backend/.env.example)
+.env
+*.p8
+*.sqlite
+*.sqlite-*

@@ -1,6 +1,19 @@
-# Claude Remote für iOS
+# Claude Remote
 
-`ClaudeRemote.xcodeproj` öffnen. Das Target erfordert iOS 17. Für die Geräteprüfung im Target das eigene Signing Team und eine eindeutige Bundle-ID setzen. Dieselbe App-ID im Apple Developer Account für Push Notifications freischalten und ein passendes Provisioning Profile wählen. Debug verwendet APNs Development, Release APNs Production. Der Dispatcher benötigt zum Profil passende Umgebung, Bundle-ID als Topic, Team-ID, Key-ID und einen privaten APNs-Schlüssel. [Apple APNs-Registrierung](https://developer.apple.com/documentation/UserNotifications/registering-your-app-with-apns)
+Claude Remote soll dir Entscheidungen aus laufenden Claude-Code-Aufgaben aufs iPhone bringen. Der aktuelle Prototyp zeigt den Textweg: Eine verwaltete Claude-Sitzung stellt eine Frage, du antwortest, und genau diese Sitzung wird mit deiner Entscheidung fortgesetzt.
 
-Auf dem iPhone die HTTPS-Adresse und das Benutzer-Token eingeben, verbinden und Mitteilungen aktivieren. Einen Batch erzeugen und prüfen, ob Antippen der Mitteilung nach Authentifizierung den passenden Batch öffnet. Das Benutzer-Token liegt im gerätegebundenen Schlüsselbund. Textbetrieb ist auch über die Fragenliste verfügbar.
+**Einsteigen** · [ELI5 mit Beispiel und Bilderbuchablauf](docs/eli5.md)
+
+**Ausprobieren** · [Schritt für Schritt von der lokalen Prüfung zum iPhone](docs/betrieb.md)
+
+**Nachschlagen** · [Machbarkeit](docs/feasibility.md) · [Architektur](docs/architecture.md) · [API](docs/api/openapi.yaml) · [Sicherheit](docs/security.md) · [Testnachweise](docs/test-plan.md) · [Offene Sprachmessungen](docs/voice-benchmarks.md)
+
+| Bestandteil | Ablage | Aufgabe |
+| --- | --- | --- |
+| Dispatcher | [backend/](backend/README.md) | Speichert Sitzungen, Fragen, Antworten, Quittungen und Push-Aufträge |
+| Agent | [agent/](agent/README.md) | Bindet eine Entscheidung an die richtige Claude-Sitzung und bestätigt die Fortsetzung |
+| App | [ios/](ios/README.md) | Zeigt Sitzungen, Fragebatches und Verlauf. Erfasst Text und Freigaben |
+| Projektübergabe | [handoff.md](handoff.md) | Hält Stand und nächste Prüfpunkte fest |
+
+Stand 21. November 2026. Beide Uberspace-Accounts sind inventarisiert. Der Resume-Test über beide Hosts, der kombinierte Test mit zwei echten Claude-Sitzungen und der unsignierte iPhone-Build waren erfolgreich. Der installierte HTTPS-Betrieb und die Push-Zustellung auf einem signierten iPhone sind offen.
 # TeleKlaus
