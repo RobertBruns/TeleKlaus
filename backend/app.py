@@ -41,14 +41,14 @@ def migrate():
         raise RuntimeError("Configure two distinct random ASCII tokens of at least 32 characters")
     with db() as connection:
         revision = connection.execute("PRAGMA user_version").fetchone()[0]
-        if revision == 0:
-            path = Path(__file__).with_name("migrations") / "001_initial.sql"
+        steps = sorted(Path(__file__).with_name("migrations").glob("[0-9][0-9][0-9]_*.sql"))
+        if revision > len(steps):
+            raise RuntimeError(f"Unsupported database revision {revision}")
+        for number, path in enumerate(steps[revision:], start=revision + 1):
             for statement in path.read_text().split(";"):
                 if statement.strip():
                     connection.execute(statement)
-            connection.execute("PRAGMA user_version=1")
-        elif revision != 1:
-            raise RuntimeError(f"Unsupported database revision {revision}")
+            connection.execute(f"PRAGMA user_version={number}")
 
 
 agent_bearer = HTTPBearer(auto_error=False, scheme_name="AgentToken")
@@ -112,7 +112,8 @@ class DeviceInput(BaseModel):
 
 class StatusInput(BaseModel):
     id: UUID
-    kind: Literal["progress", "complete", "error"]
+    kind: Literal["progress", "complete", "error", "attention"]
+    detail: str = Field(default="", max_length=500)
 
 
 def owned_session(connection, session):
@@ -141,7 +142,7 @@ def public_batch(row):
             **json.loads(row["content"])}
 
 
-def event(connection, session, kind, subject, event_id=None):
+def event(connection, session, kind, subject, event_id=None, detail=None):
     identifier = str(event_id or uuid4())
     previous = connection.execute("SELECT session,kind,subject FROM events WHERE id=?", (identifier,)).fetchone()
     identity = (str(session), kind, str(subject))
@@ -149,8 +150,9 @@ def event(connection, session, kind, subject, event_id=None):
         if tuple(previous) != identity:
             raise HTTPException(409, "Event identity conflict")
         return identifier
-    connection.execute("INSERT INTO events(id,session,kind,subject) VALUES(?,?,?,?)", (identifier, *identity))
-    if kind in {"question", "complete", "error"}:
+    connection.execute("INSERT INTO events(id,session,kind,subject,detail) VALUES(?,?,?,?,?)",
+                       (identifier, *identity, detail))
+    if kind in {"question", "complete", "error", "attention"}:
         connection.execute(
             "INSERT INTO push_queue SELECT ?,token FROM devices WHERE tenant=? AND actor=?",
             (identifier, tenant, actor),
@@ -203,7 +205,7 @@ def create_batch(session: UUID, data: BatchInput):
 def status(session: UUID, data: StatusInput):
     with db() as connection:
         owned_session(connection, session)
-        return {"id": event(connection, session, data.kind, session, data.id)}
+        return {"id": event(connection, session, data.kind, session, data.id, data.detail or None)}
 
 
 @app.get(prefix + "/agent/sessions/{session}/decisions", dependencies=[Agent])

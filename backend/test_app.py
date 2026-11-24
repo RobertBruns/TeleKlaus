@@ -62,6 +62,28 @@ class RoutingTest(unittest.TestCase):
                 self.assertEqual([r["kind"] for r in client.get("events", headers=USER).json()],
                                  ["question", "decision", "acknowledged"])
 
+    def test_attention_from_interactive_session_after_upgrade(self):
+        session = new_id()
+        with tempfile.TemporaryDirectory() as directory:
+            os.environ.update(REMOTE_DB=str(Path(directory) / "db"), REMOTE_AGENT_TOKEN="a"*32,
+                              REMOTE_USER_TOKEN="u"*32)
+            with db() as connection:
+                for statement in (Path(__file__).with_name("migrations") / "001_initial.sql").read_text().split(";"):
+                    if statement.strip():
+                        connection.execute(statement)
+                connection.execute("PRAGMA user_version=1")
+            with TestClient(app, base_url="https://testserver" + PREFIX) as client:
+                client.post("devices/register", headers=USER, json={"token": "f"*64})
+                client.post("agent/sessions/upsert", headers=AGENT,
+                            json={"id": session, "project": "repo", "mode": "interactive"})
+                status = client.post(f"agent/sessions/{session}/events", headers=AGENT,
+                                     json={"id": new_id(), "kind": "attention", "detail": "Claude wartet"})
+                self.assertEqual(status.status_code, 200)
+                self.assertEqual(client.get("events", headers=USER).json()[0]["detail"], "Claude wartet")
+                with db() as connection:
+                    self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 2)
+                    self.assertEqual(connection.execute("SELECT count(*) FROM push_queue").fetchone()[0], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
