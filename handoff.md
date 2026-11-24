@@ -53,7 +53,7 @@ Voice und CallKit erst nach erfolgreicher Machbarkeitsprüfung.
 - Antworten niemals als Shell-Befehle ausführen.
 - Entscheidungen strikt an Tenant/Host/Session/Batch binden.
 - Keine Fortsetzung behaupten, bevor sie bestätigt wurde.
-- Kein PushKit für simulierte lokale TTS-Anrufe.
+- Kein PushKit für simulierte lokale TTS-Anrufe. Ausnahme seit 24. November 2026 (Entscheidung Robert): Anruf-Variante B mit Sprachausgabe und -erkennung auf dem iPhone, ausschließlich für persönliche Debug- und TestFlight-Builds. Vor einer App-Store-Verteilung auf Variante A (Sprache auf dem Server, echter Medienpfad) umstellen.
 - Speech und echte VoIP-Medien separat validieren.
 - Keine ungeprüfte CarPlay-Kompatibilität behaupten.
 - Keine Secrets in Quellcode, Push-Nachrichten oder Chat.

@@ -17,7 +17,8 @@ def main():
     with httpx.Client(base_url=endpoint, http2=True, timeout=10) as client:
         while True:
             with db() as connection:
-                entries = connection.execute("SELECT event,token FROM push_queue ORDER BY rowid LIMIT 50").fetchall()
+                entries = connection.execute("""SELECT q.event, q.token, d.kind FROM push_queue q
+                    JOIN devices d ON d.token=q.token ORDER BY q.rowid LIMIT 50""").fetchall()
             if not entries:
                 time.sleep(2)
                 continue
@@ -26,22 +27,28 @@ def main():
                 token = jwt.encode({"iss": team, "iat": issued}, key, algorithm="ES256", headers={"kid": key_id})
             retry = False
             for entry in entries:
-                event, device = entry
+                event, device, kind = entry
+                if kind == "voip":
+                    headers = {"apns-topic": topic + ".voip", "apns-push-type": "voip", "apns-priority": "10",
+                               "apns-expiration": str(int(time.time()) + 120)}
+                    body = {"event_id": event}
+                else:
+                    headers = {"apns-topic": topic, "apns-push-type": "alert", "apns-collapse-id": event}
+                    body = {"aps": {"alert": {"title": "Claude Remote", "body": "Neue Aktivität"}}, "event_id": event}
                 try:
-                    response = client.post(f"/3/device/{device}", headers={
-                        "authorization": f"bearer {token}", "apns-topic": topic,
-                        "apns-push-type": "alert", "apns-collapse-id": event,
-                    }, json={"aps": {"alert": {"title": "Claude Remote", "body": "Neue Aktivität"}},
-                             "event_id": event})
+                    response = client.post(f"/3/device/{device}", headers={"authorization": f"bearer {token}",
+                                                                            **headers}, json=body)
                 except httpx.TransportError:
                     retry = True
                     continue
                 if response.status_code not in {200, 410}:
-                    print(f"APNs status {response.status_code} for event {event}", flush=True)
-                    retry = True
-                    continue
+                    print(f"APNs {kind} status {response.status_code} for event {event}: {response.text[:200]}",
+                          flush=True)
+                    if response.status_code in {429} or response.status_code >= 500:
+                        retry = True
+                        continue
                 with db() as connection:
-                    if response.status_code == 410:
+                    if response.status_code == 410 or "BadDeviceToken" in response.text:
                         connection.execute("DELETE FROM push_queue WHERE token=?", (device,))
                         connection.execute("DELETE FROM devices WHERE token=?", (device,))
                     else:

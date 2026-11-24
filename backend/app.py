@@ -108,6 +108,7 @@ class DecisionInput(BaseModel):
 
 class DeviceInput(BaseModel):
     token: str = Field(pattern=r"^[a-f0-9]{32,512}$")
+    kind: Literal["alert", "voip"] = "alert"
 
 
 class StatusInput(BaseModel):
@@ -152,10 +153,12 @@ def event(connection, session, kind, subject, event_id=None, detail=None):
         return identifier
     connection.execute("INSERT INTO events(id,session,kind,subject,detail) VALUES(?,?,?,?,?)",
                        (identifier, *identity, detail))
-    if kind in {"question", "complete", "error", "attention"}:
+    alert, call = {"question", "complete", "error", "attention"}, {"question", "attention"}
+    if kind in alert:
         connection.execute(
-            "INSERT INTO push_queue SELECT ?,token FROM devices WHERE tenant=? AND actor=?",
-            (identifier, tenant, actor),
+            """INSERT INTO push_queue SELECT ?,token FROM devices
+               WHERE tenant=? AND actor=? AND (kind='alert' OR ?)""",
+            (identifier, tenant, actor, kind in call),
         )
     return identifier
 
@@ -312,7 +315,8 @@ def events(cursor: int = 0):
 @app.post(prefix + "/devices/register", dependencies=[User])
 def register(data: DeviceInput):
     with db() as connection:
-        connection.execute("INSERT OR IGNORE INTO devices VALUES(?,?,?)", (data.token, tenant, actor))
+        connection.execute("INSERT OR IGNORE INTO devices(token,tenant,actor,kind) VALUES(?,?,?,?)",
+                           (data.token, tenant, actor, data.kind))
         if connection.execute("SELECT tenant,actor FROM devices WHERE token=?", (data.token,)).fetchone()[:] != (tenant, actor):
             raise HTTPException(409, "Device ownership conflict")
     return {"registered": True}

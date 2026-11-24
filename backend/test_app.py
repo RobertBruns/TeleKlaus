@@ -80,9 +80,16 @@ class RoutingTest(unittest.TestCase):
                                      json={"id": new_id(), "kind": "attention", "detail": "Claude wartet"})
                 self.assertEqual(status.status_code, 200)
                 self.assertEqual(client.get("events", headers=USER).json()[0]["detail"], "Claude wartet")
+                client.post("devices/register", headers=USER, json={"token": "e"*64, "kind": "voip"})
+                for kind in ("attention", "complete"):
+                    client.post(f"agent/sessions/{session}/events", headers=AGENT, json={"id": new_id(), "kind": kind})
                 with db() as connection:
-                    self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 2)
-                    self.assertEqual(connection.execute("SELECT count(*) FROM push_queue").fetchone()[0], 1)
+                    self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 3)
+                    queued = connection.execute(
+                        "SELECT d.kind, e.kind FROM push_queue q JOIN devices d ON d.token=q.token "
+                        "JOIN events e ON e.id=q.event ORDER BY e.seq, d.kind").fetchall()
+                    self.assertEqual([tuple(r) for r in queued], [("alert", "attention"), ("alert", "attention"),
+                                                                  ("voip", "attention"), ("alert", "complete")])
 
 
 if __name__ == "__main__":
