@@ -18,3 +18,9 @@ Der vorliegende Job unterstützt einen Fragebatch und nutzt Claude mit deaktivie
 Braucht Claude eine Entscheidung, landet ein Fragebatch auf dem Telefon. `tk-claude` wartet ohne laufenden Claude-Prozess und setzt nach der Antwort dieselbe Session fort. Am Ende gibt es Claudes Ergebnis aus und meldet `complete`. Fehler und eine überschrittene Wartezeit melden `error` und enden mit Exit-Code ungleich 0, bei Zeitüberschreitung 3. Optionen vor `-p`: `--tk-name NAME` (Anzeige in der App, Standard Ordnername) und `--tk-wait 8h` (Standard). Zugang aus `~/.config/teleklaus/agent.env` oder `TK_ENV_FILE`. Protokoll je Lauf unter `~/.claude-remote/tk/<session>/journal.jsonl`.
 
 Claude fragt verlässlich nur, wenn der Prompt sagt, worüber. Ohne Vorgabe wählt es plausible Standards und nennt sie im Ergebnis. Stürzt `tk-claude` während des Wartens ab, wird eine spätere Antwort nicht mehr zugestellt. Eine automatische Wiederaufnahme fehlt.
+
+## Laufende Sessions: `tk-notify`
+
+`tk_notify.py` ist ein Notification-Hook für Claude Code. Er meldet dem Dispatcher, wenn eine Session auf dem Host auf den Operator wartet (`notification_type` `permission_prompt`, also Fragen und Freigaben). Der Dispatcher speichert das als Ereignis `attention` mit kurzem Text und schickt einen Push. Geantwortet wird weiter in der Claude-App. Der Hook schreibt nichts in die Session.
+
+Einrichtung auf Capella: `ln -s "$PWD/agent/tk_notify.py" ~/bin/tk-notify` und in `~/.claude/settings.json` unter `hooks.Notification` einen Eintrag mit `"matcher": "permission_prompt"` und dem Befehl `"$HOME/bin/tk-notify"` (`"async": true`) anlegen. Zugang wie bei `tk-claude`. Fehler landen in `~/.claude-remote/tk-notify.log`, die Session läuft immer weiter. Der Hook kennt nur die Meldung von Claude Code, nicht den Fragetext.
