@@ -6,9 +6,9 @@ Beide Uberspace-Accounts wurden lesend inventarisiert. Der M0-Resume-Test im fre
 
 Ein M1-Textprototyp mit FastAPI/SQLite, verwaltetem Agent-Job, SwiftUI und normalem APNs-Versandcode ist im Workspace vorhanden. Der unsignierte iPhone-Build ist erfolgreich. Der kombinierte Routing-Test mit zwei echten Claude-Sessions und die Wiederanlauf- und Deduplizierungstests wurden bestanden.
 
-Am 24. November 2026 lief der Dispatcher als User-Service auf Styx unter `https://teleklaus.rand.uber.space` und der Agent auf Capella. Eine auf dem iPhone beantwortete Frage wurde derselben Claude-Session zugestellt und bestätigt. Der Dienst lief nach Logout weiter. Linger ist für `rand` aktiv, ein Hostneustart ist ungeprüft. Der Push-Worker läuft als User-Service auf Styx. Eine Push-Mitteilung (APNs Sandbox) kam auf dem iPhone an und öffnete den Fragebatch. Der Agent läuft noch nicht als Dienst.
+Am 24. November 2026 lief der Dispatcher als User-Service auf Styx unter `https://teleklaus.rand.uber.space` und der Agent auf Capella. Eine auf dem iPhone beantwortete Frage wurde derselben Claude-Session zugestellt und bestätigt. Der Dienst lief nach Logout weiter. Linger ist für `rand` aktiv, ein Hostneustart ist ungeprüft. Der Push-Worker läuft als User-Service auf Styx. Eine Push-Mitteilung (APNs Sandbox) kam auf dem iPhone an und öffnete den Fragebatch. Der Agent läuft noch nicht als Dienst. Mit `agent/tk_claude.py` fragt eine per Skript gestartete Claude-Session von sich aus über das Telefon nach und setzt nach der Antwort fort; am 24. November 2026 in `test-repo` mit drei Fragen belegt.
 
-Offen sind der Zwei-Job-Versuch über HTTPS, Sandbox und Produktion gleichzeitig im Push-Worker, modellinitiierte Fragen über installierte Skills/Hooks und die automatische Auflösung eines Absturzes mitten im Resume. Speech und VoIP sind ungeprüft.
+Offen sind der Zwei-Job-Versuch über HTTPS, Sandbox und Produktion gleichzeitig im Push-Worker, die automatische Auflösung eines Absturzes mitten im Resume. Speech und VoIP sind ungeprüft.
 
 [Machbarkeit](docs/feasibility.md) · [Testnachweise](docs/test-plan.md)
 
@@ -30,9 +30,11 @@ Voice und CallKit erst nach erfolgreicher Machbarkeitsprüfung.
 - Kein Docker oder Root vorgesehen.
 
 ## Nächste Schritte
-1. Agent als Dienst auf Capella betreiben und den Zwei-Job-Versuch über HTTPS wiederholen.
-2. Push-Worker: APNs-Fehlergrund protokollieren, dauerhaft abgelehnte Zustellungen verwerfen, APNs-Umgebung je Gerät speichern.
-3. Modellinitiierte Fragen und Wiederanlauf innerhalb eines Claude-Turns ergänzen.
+1. `tk-claude` in ein echtes Skript übernehmen (imagePipeline braucht vorher eine Sperre gegen parallele Läufe).
+2. Anruf als weiterer Benachrichtigungsweg: Telefonie-Anbieter oder CallKit entscheiden.
+3. Agent als Dienst auf Capella betreiben und den Zwei-Job-Versuch über HTTPS wiederholen.
+4. Push-Worker: APNs-Fehlergrund protokollieren, dauerhaft abgelehnte Zustellungen verwerfen, APNs-Umgebung je Gerät speichern.
+5. Wiederaufnahme von `tk-claude` nach Absturz während des Wartens.
 
 ## M1
 - FastAPI, SQLite, Migrationen.
