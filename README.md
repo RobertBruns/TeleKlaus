@@ -15,5 +15,5 @@ Claude Remote soll dir Entscheidungen aus laufenden Claude-Code-Aufgaben aufs iP
 | App | [ios/](ios/README.md) | Zeigt Sitzungen, Fragebatches und Verlauf. Erfasst Text und Freigaben |
 | Projektübergabe | [handoff.md](handoff.md) | Hält Stand und nächste Prüfpunkte fest |
 
-Stand 24. November 2026. Der Dispatcher läuft unter `https://teleklaus.rand.uber.space`. Eine auf dem iPhone beantwortete Frage wurde über Styx und den Agenten auf Capella derselben Claude-Sitzung zugestellt und bestätigt. Die Push-Zustellung auf dem iPhone ist offen.
+Stand 24. November 2026. Der Dispatcher läuft unter `https://teleklaus.rand.uber.space`. Eine auf dem iPhone beantwortete Frage wurde über Styx und den Agenten auf Capella derselben Claude-Sitzung zugestellt und bestätigt. Eine Push-Mitteilung kam auf dem iPhone an und öffnete den Fragebatch.
 # TeleKlaus
