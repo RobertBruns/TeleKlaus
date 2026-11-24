@@ -43,7 +43,7 @@ Die [Backend-Anleitung](../backend/README.md) beschreibt das Anlegen der venv, d
 curl --fail --show-error 'https://DEINE-BASIS-URL/api/v1/health'
 ```
 
-Erwartet wird `{"ok":true}`. Prüfe getrennt, ob die Unit nach SSH-Logout und späterem Neustart des Hosts wieder läuft. Die Inventur hat den systemd-Benutzermanager auf Styx erreicht. Der Linger-Status ließ sich dabei nicht auslesen.
+Erwartet wird `{"ok":true}`. Prüfe getrennt, ob die Unit nach SSH-Logout und späterem Neustart des Hosts wieder läuft. Linger ist aktiv, wenn `rand` in `/var/lib/systemd/linger` steht. `loginctl` verweigert die Abfrage. Am 24. November 2026 war das der Fall und der Dienst lief nach Logout weiter.
 
 ## 4. Auf Capella einen Textjob starten
 

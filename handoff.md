@@ -1,12 +1,14 @@
 # Claude Remote — Handoff
-Stand: 2026-11-21
+Stand: 2026-11-24
 
 ## Status
 Beide Uberspace-Accounts wurden lesend inventarisiert. Der M0-Resume-Test im freigegebenen Test-Repo hat die Frage-Antwort-Fortsetzung über einen flüchtigen Dispatcher bestätigt.
 
 Ein M1-Textprototyp mit FastAPI/SQLite, verwaltetem Agent-Job, SwiftUI und normalem APNs-Versandcode ist im Workspace vorhanden. Der unsignierte iPhone-Build ist erfolgreich. Der kombinierte Routing-Test mit zwei echten Claude-Sessions und die Wiederanlauf- und Deduplizierungstests wurden bestanden.
 
-Offen sind der Betrieb über produktives HTTPS, APNs auf einem physischen iPhone, modellinitiierte Fragen über installierte Skills/Hooks und die automatische Auflösung eines Absturzes mitten im Resume. Speech und VoIP sind ungeprüft.
+Am 24. November 2026 lief der Dispatcher als User-Service auf Styx unter `https://teleklaus.rand.uber.space` und der Agent auf Capella. Eine auf dem iPhone beantwortete Frage wurde derselben Claude-Session zugestellt und bestätigt. Der Dienst lief nach Logout weiter. Linger ist für `rand` aktiv, ein Hostneustart ist ungeprüft. Der Agent läuft noch nicht als Dienst.
+
+Offen sind APNs-Versand auf einem physischen iPhone, der Zwei-Job-Versuch über HTTPS, modellinitiierte Fragen über installierte Skills/Hooks und die automatische Auflösung eines Absturzes mitten im Resume. Speech und VoIP sind ungeprüft.
 
 [Machbarkeit](docs/feasibility.md) · [Testnachweise](docs/test-plan.md)
 
@@ -28,8 +30,8 @@ Voice und CallKit erst nach erfolgreicher Machbarkeitsprüfung.
 - Kein Docker oder Root vorgesehen.
 
 ## Nächste Schritte
-1. Dispatcher und Agent im freigegebenen HTTPS-Testbetrieb verifizieren.
-2. Xcode-App signieren und normale APNs-Zustellung auf einem physischen iPhone belegen.
+1. APNs-Schlüssel anlegen, Push-Worker auf Styx starten und Zustellung auf dem iPhone belegen.
+2. Agent als Dienst auf Capella betreiben und den Zwei-Job-Versuch über HTTPS wiederholen.
 3. Modellinitiierte Fragen und Wiederanlauf innerhalb eines Claude-Turns ergänzen.
 
 ## M1
