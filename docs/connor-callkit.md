@@ -29,6 +29,18 @@ Eine offene Frage oder eine wartende Claude-Session lässt das iPhone klingeln. 
 5. Ablehnen oder verpasst: nichts senden. Die Frage bleibt in der App offen, der normale Push kommt weiterhin.
 6. Gesprochene Antworten sind reiner Text. Nichts davon ausführen. Keine Inhalte in Logs.
 
+## Weg aufs iPhone
+
+Robert's iPhone hat iOS 27. Xcode kann es nicht direkt bespielen oder debuggen. Der funktionierende Weg ist derselbe wie beim Push-Test: Archiv, Export als Debug (Development), Installation mit Apple Configurator.
+
+1. Gesprächsablauf zuerst im Simulator entwickeln. Dafür im Debug-Build einen versteckten Test-Knopf vorsehen, der den Ablauf ohne Push startet (Frage vorlesen, zuhören, bestätigen). Der Simulator empfängt keine echten VoIP-Pushes. Klingeln aus geschlossener App lässt sich nur auf dem iPhone prüfen.
+2. Archiv, Export und Installation per Skript automatisieren, z. B. `ios/scripts/install-device.sh`:
+   - `xcodebuild archive -project ios/ClaudeRemote.xcodeproj -scheme ClaudeRemote -archivePath …`
+   - `xcodebuild -exportArchive … -exportOptionsPlist` mit `method` Development (`debugging` in neueren Xcode-Versionen)
+   - `cfgutil install-app <ipa>` aus den Automation Tools von Apple Configurator (Menü Apple Configurator → Install Automation Tools)
+   Ob `cfgutil` mit iOS 27 funktioniert, ist ungeprüft. Die Configurator-Oberfläche hat funktioniert.
+3. Logs vom iPhone möglichst über die Konsole-App am Mac per Kabel lesen. Ob das mit iOS 27 geht, ist ungeprüft.
+
 ## Test
 
 1. Debug-Build wie bisher exportieren und installieren, Mitteilungen und Mikrofon erlauben, App einmal öffnen, damit der VoIP-Token registriert wird.
