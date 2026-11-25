@@ -272,6 +272,11 @@ private struct Home: View {
                         Button("Verbinden") { Task { await store.connect() } }
                     }
                 }
+                if let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                    Text("Build \(build)")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
             .navigationTitle("TeleKlaus")
             #if DEBUG
