@@ -109,6 +109,7 @@ class DecisionInput(BaseModel):
 class DeviceInput(BaseModel):
     token: str = Field(pattern=r"^[a-f0-9]{32,512}$")
     kind: Literal["alert", "voip"] = "alert"
+    environment: Literal["sandbox", "production"] | None = None
 
 
 class StatusInput(BaseModel):
@@ -319,6 +320,8 @@ def register(data: DeviceInput):
                            (data.token, tenant, actor, data.kind))
         if connection.execute("SELECT tenant,actor FROM devices WHERE token=?", (data.token,)).fetchone()[:] != (tenant, actor):
             raise HTTPException(409, "Device ownership conflict")
+        if data.environment:
+            connection.execute("UPDATE devices SET environment=? WHERE token=?", (data.environment, data.token))
     return {"registered": True}
 
 

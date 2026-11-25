@@ -84,7 +84,7 @@ class RoutingTest(unittest.TestCase):
                 for kind in ("attention", "complete"):
                     client.post(f"agent/sessions/{session}/events", headers=AGENT, json={"id": new_id(), "kind": kind})
                 with db() as connection:
-                    self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 3)
+                    self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 4)
                     queued = connection.execute(
                         "SELECT d.kind, e.kind FROM push_queue q JOIN devices d ON d.token=q.token "
                         "JOIN events e ON e.id=q.event ORDER BY e.seq, d.kind").fetchall()

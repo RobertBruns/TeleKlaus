@@ -33,7 +33,7 @@ Voice und CallKit erst nach erfolgreicher Machbarkeitsprüfung.
 1. `tk-claude` in ein echtes Skript übernehmen (imagePipeline braucht vorher eine Sperre gegen parallele Läufe).
 2. Anruf als weiterer Benachrichtigungsweg: Telefonie-Anbieter oder CallKit entscheiden.
 3. Agent als Dienst auf Capella betreiben und den Zwei-Job-Versuch über HTTPS wiederholen.
-4. Push-Worker: APNs-Fehlergrund protokollieren, dauerhaft abgelehnte Zustellungen verwerfen, APNs-Umgebung je Gerät speichern.
+4. Push-Worker: erledigt im Backend (25. November 2026, noch nicht auf Styx): Grund aus der APNs-Antwort wird protokolliert, tote Tokens (`BadDeviceToken`, `Unregistered`, `DeviceTokenNotForTopic`, 410) löschen das Gerät, andere dauerhafte 4xx nur die Zustellung, abgelaufenes Provider-Token wird erneuert und wiederholt. Geräte speichern ihre APNs-Umgebung (Migration 004, optionales Feld `environment`: `sandbox`/`production` bei `POST /devices/register`; fehlt es, gilt `REMOTE_APNS_SANDBOX`). **Offen (Connor):** die App schickt `environment` mit (Debug-Build `sandbox`, TestFlight/App Store `production`). Offen: VoIP-Zustellungen, die nach einer Wiederholung älter als ihr Ablauf (120 s) sind, werden noch versucht.
 5. Wiederaufnahme von `tk-claude` nach Absturz während des Wartens.
 
 ## M1
