@@ -162,6 +162,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APS_ENVIRONMENT = production;
+				VOICE_INFOPLIST_FILE = ClaudeRemote/Info.plist;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = TELEKLAUS_PERSONAL_CALLS;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = ClaudeRemote/ClaudeRemote.entitlements;
