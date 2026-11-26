@@ -178,10 +178,16 @@ private final class Store: ObservableObject {
         guard connected else { return }
         do {
             _ = try await request("/devices/register", method: "POST",
-                                  body: JSONEncoder().encode(["token": value]))
+                                  body: JSONEncoder().encode(["token": value, "environment": apnsEnvironment]))
         } catch { problem = error.localizedDescription }
     }
 }
+
+/// APNs environment of this build for the dispatcher: "sandbox" (Debug) or "production" (Release).
+let apnsEnvironment: String = {
+    let value = Bundle.main.object(forInfoDictionaryKey: "TeleKlausAPSEnvironment") as? String
+    return value == "development" ? "sandbox" : "production"
+}()
 
 private final class Notifications: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     static let store = Store()
@@ -432,7 +438,7 @@ private final class VoiceCalls: NSObject, PKPushRegistryDelegate, CXProviderDele
         guard !connection.url.isEmpty, !connection.token.isEmpty else { return }
         do {
             _ = try await connection.request("/devices/register", method: "POST",
-                body: JSONEncoder().encode(["token": token, "kind": "voip"]))
+                body: JSONEncoder().encode(["token": token, "kind": "voip", "environment": apnsEnvironment]))
         } catch {
             Notifications.store.problem = error.localizedDescription
         }
