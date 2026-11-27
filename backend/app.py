@@ -154,7 +154,7 @@ def event(connection, session, kind, subject, event_id=None, detail=None):
         return identifier
     connection.execute("INSERT INTO events(id,session,kind,subject,detail) VALUES(?,?,?,?,?)",
                        (identifier, *identity, detail))
-    alert, call = {"question", "complete", "error", "attention"}, {"question", "attention"}
+    alert, call = {"question", "complete", "error", "attention"}, {"question"}
     if kind in alert:
         connection.execute(
             """INSERT INTO push_queue SELECT ?,token FROM devices

@@ -89,7 +89,7 @@ class RoutingTest(unittest.TestCase):
                         "SELECT d.kind, e.kind FROM push_queue q JOIN devices d ON d.token=q.token "
                         "JOIN events e ON e.id=q.event ORDER BY e.seq, d.kind").fetchall()
                     self.assertEqual([tuple(r) for r in queued], [("alert", "attention"), ("alert", "attention"),
-                                                                  ("voip", "attention"), ("alert", "complete")])
+                                                                  ("alert", "complete")])
 
 
 if __name__ == "__main__":
