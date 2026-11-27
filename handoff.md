@@ -10,6 +10,8 @@ Am 24. November 2026 lief der Dispatcher als User-Service auf Styx unter `https:
 
 Offen sind der Zwei-Job-Versuch über HTTPS, Sandbox und Produktion gleichzeitig im Push-Worker, die automatische Auflösung eines Absturzes mitten im Resume. Speech und VoIP sind ungeprüft.
 
+Am 27. November 2026 wurde Debug-Build 11 gebaut, signiert und auf Roberts iPhone installiert. Die Geräteprüfung der neuen Stimme, der Ja/Nein-Erkennung und des Ablehnens steht aus. [Übergabe zu Build 11](handoffs/2026-11-27-alex-debug-build-11.md)
+
 [Machbarkeit](docs/feasibility.md) · [Testnachweise](docs/test-plan.md)
 
 ## Ziel
