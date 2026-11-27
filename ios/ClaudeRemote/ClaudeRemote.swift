@@ -239,6 +239,12 @@ private struct Home: View {
                         catch { store.problem = error.localizedDescription }
                     }
                 }
+                let voice = GermanVoice.voice
+                LabeledContent("Stimme", value: voice.map { "\($0.name) (\(GermanVoice.label($0.quality)))" } ?? "keine")
+                if voice?.quality != .premium {
+                    Text("Natürlichere Stimme: Einstellungen › Bedienungshilfen › Gesprochene Inhalte › Stimmen › Deutsch, dort eine Premium-Stimme laden.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
                 #endif
                 if store.connected {
                     Section("Sitzungen") {
@@ -639,12 +645,31 @@ private final class GermanVoice {
         }
     }
 
+    /// Best installed German voice: Premium before Enhanced before the compact default.
+    /// Siri voices are not available to apps. Novelty and Eloquence voices are skipped.
+    static var voice: AVSpeechSynthesisVoice? {
+        let natural = AVSpeechSynthesisVoice.speechVoices().filter {
+            $0.language == "de-DE" && !$0.voiceTraits.contains(.isNoveltyVoice)
+                && !$0.identifier.contains("eloquence")
+        }
+        return natural.max { $0.quality.rawValue < $1.quality.rawValue }
+            ?? AVSpeechSynthesisVoice(language: "de-DE")
+    }
+
+    static func label(_ quality: AVSpeechSynthesisVoiceQuality) -> String {
+        switch quality {
+        case .premium: "Premium"
+        case .enhanced: "Erweitert"
+        default: "Standard"
+        }
+    }
+
     func stop() { synthesizer.stopSpeaking(at: .immediate) }
 
     func say(_ text: String) async throws {
         try Task.checkCancellation()
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "de-DE")
+        utterance.voice = Self.voice
         synthesizer.speak(utterance)
         defer { stop() }
         repeat {
