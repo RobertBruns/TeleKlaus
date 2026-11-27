@@ -243,8 +243,11 @@ private struct Home: View {
                 if store.connected {
                     Section("Sitzungen") {
                         ForEach(store.sessions) { session in
-                            Button {
-                                Task { await store.updateMode(session) }
+                            Menu {
+                                let target = session.mode == "autonomous" ? "interactive" : "autonomous"
+                                Button(target == "autonomous" ? "Auf Autonom umstellen" : "Auf Interaktiv umstellen") {
+                                    Task { await store.updateMode(session) }
+                                }
                             } label: {
                                 LabeledContent(session.project, value: session.mode == "autonomous" ? "Autonom" : "Interaktiv")
                             }
