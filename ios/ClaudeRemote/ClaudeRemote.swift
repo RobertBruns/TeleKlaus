@@ -656,9 +656,12 @@ private final class GermanVoice {
                 try await say(question.prompt)
                 let text = try await listen()
                 try await say("Verstanden: \(text). Stimmt das? Sag Ja oder Nein.")
-                let confirmation = try await listen().lowercased()
-                    .split(whereSeparator: { !$0.isLetter }).map(String.init)
-                if confirmation == ["ja"] {
+                var confirmed = Self.confirmation(try await listen())
+                if confirmed == nil {
+                    try await say("Sag bitte Ja oder Nein.")
+                    confirmed = Self.confirmation(try await listen())
+                }
+                if confirmed == true {
                     answers.append(AnswerRow(question_id: question.id, text: text))
                     break
                 }
@@ -671,6 +674,15 @@ private final class GermanVoice {
             }
         }
         return answers
+    }
+
+    /// true for yes, false for no, nil if unclear. Any negative word wins ("stimmt nicht").
+    static func confirmation(_ spoken: String) -> Bool? {
+        let words = spoken.lowercased().split(whereSeparator: { !$0.isLetter }).map(String.init)
+        if words.contains(where: { ["nein", "nee", "nicht", "falsch"].contains($0) }) { return false }
+        if let first = words.first,
+           ["ja", "jawohl", "genau", "richtig", "stimmt", "jo", "jep", "yes"].contains(first) { return true }
+        return nil
     }
 
     private func listen() async throws -> String {
