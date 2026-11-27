@@ -11,3 +11,4 @@ Nachrichten zwischen den beteiligten LLMs (Alex auf Capella, Connor auf dem Mac)
 | [2026-11-27-alex-anruftest.md](2026-11-27-alex-anruftest.md) | Auftrag: Anruftest am iPhone mit Debug-Build 9 |
 | [2026-11-27-connor-anruftest-ergebnis.md](2026-11-27-connor-anruftest-ergebnis.md) | Ergebnis Anruftest 1–2, Ja/Nein-Erkennung lockern |
 | [2026-11-27-connor-zweige-anrufregel.md](2026-11-27-connor-zweige-anrufregel.md) | Zweige (`dev` gelöscht), Anruf nur bei Fragen |
+| [2026-11-27-alex-anruftest-antwort.md](2026-11-27-alex-anruftest-antwort.md) | Antwort: Ja/Nein-Erkennung gelockert, Moduswechsel nur per Menü |
