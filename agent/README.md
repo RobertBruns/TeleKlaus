@@ -17,7 +17,7 @@ Der vorliegende Job unterstützt einen Fragebatch und nutzt Claude mit deaktivie
 
 Braucht Claude eine Entscheidung, landet ein Fragebatch auf dem Telefon. `tk-claude` wartet ohne laufenden Claude-Prozess und setzt nach der Antwort dieselbe Session fort. Am Ende gibt es Claudes Ergebnis aus und meldet `complete`. Fehler und eine überschrittene Wartezeit melden `error` und enden mit Exit-Code ungleich 0, bei Zeitüberschreitung 3. Optionen vor `-p`: `--tk-name NAME` (Anzeige in der App, Standard Ordnername) und `--tk-wait 8h` (Standard). Zugang aus `~/.config/teleklaus/agent.env` oder `TK_ENV_FILE`. Protokoll je Lauf unter `~/.claude-remote/tk/<session>/journal.jsonl`.
 
-Claude fragt verlässlich nur, wenn der Prompt sagt, worüber. Ohne Vorgabe wählt es plausible Standards und nennt sie im Ergebnis. Stürzt `tk-claude` während des Wartens ab, wird eine spätere Antwort nicht mehr zugestellt. Eine automatische Wiederaufnahme fehlt.
+Claude fragt verlässlich nur, wenn der Prompt sagt, worüber. Ohne Vorgabe wählt es plausible Standards und nennt sie im Ergebnis. Stürzt `tk-claude` während des Wartens ab, setzt `tk-claude [--tk-wait 8h] --tk-resume <session>` die Wartezeit auf die offene Frage fort, mit Ordner, Optionen und Name aus dem Protokoll. Stand es gerade mitten in der Fortsetzung von Claude, hält es an: dann zuerst das Claude-Transkript prüfen. Antwortet der Dispatcher mit einem HTTP-Fehler, bricht `tk-claude` sofort ab, nur Netzwerkfehler werden bis zum Ende der Wartezeit wiederholt.
 
 ## Laufende Sessions: `tk-notify`
 

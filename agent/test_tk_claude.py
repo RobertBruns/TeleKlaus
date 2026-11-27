@@ -71,6 +71,34 @@ class TaskTest(unittest.TestCase):
                 tk_claude.run("demo", 60, "Aufgabe", [])
         self.assertEqual(raised.exception.code, 3)
 
+    def test_resume_waits_on_the_journaled_question(self):
+        dispatcher = FakeDispatcher([])
+        with patch.object(tk_claude, "api", dispatcher), patch.object(tk_claude, "time") as clock, \
+                patch.object(tk_claude, "run_claude",
+                             return_value={"status": "ask", "summary": "Farbe", "questions": ["Welche Farbe?"]}):
+            clock.time.side_effect = [0, 0, 0, 100, 100]
+            with self.assertRaises(tk_claude.Failure):
+                tk_claude.run("demo", 60, "Aufgabe", ["--max-turns", "3"])
+        session = dispatcher.calls[0] and next(Path.home().joinpath(".claude-remote", "tk").iterdir()).name
+        first_batch = dispatcher.batches[0]
+        dispatcher.answers = ["Blau"]
+        done = {"status": "done", "summary": "Blau", "questions": [], "decision_id": "d2"}
+        with patch.object(tk_claude, "api", dispatcher), patch.object(tk_claude, "time") as clock, \
+                patch.object(tk_claude, "run_claude", return_value=done) as claude:
+            clock.time.return_value = 0
+            self.assertEqual(tk_claude.resume(session, 60), "Blau")
+        self.assertEqual(dispatcher.batches[-1], first_batch)
+        self.assertEqual(claude.call_args.args[1], ["--max-turns", "3"])
+        self.assertTrue(claude.call_args.args[3])
+
+    def test_resume_refuses_an_interrupted_claude_turn(self):
+        state = Path.home() / ".claude-remote" / "tk" / "s"
+        state.mkdir(parents=True)
+        tk_claude.journal(state, {"start": {"name": "demo", "cwd": "/", "options": []}})
+        tk_claude.journal(state, {"decision": "d1", "state": "processing"})
+        with self.assertRaisesRegex(tk_claude.Failure, "transcript"):
+            tk_claude.resume("s", 60)
+
     def test_rejects_options_it_sets_itself(self):
         with self.assertRaises(tk_claude.Failure):
             tk_claude.parse(["-p", "x", "--output-format", "text"])
