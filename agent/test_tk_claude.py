@@ -47,7 +47,8 @@ class TaskTest(unittest.TestCase):
         self.assertTrue(claude.call_args_list[2].args[3])
         acks = [c for c in dispatcher.calls if c.endswith("/ack")]
         self.assertEqual([a.split("/")[-2] for a in acks], ["d1", "d2"])
-        self.assertTrue(dispatcher.calls[-1].endswith("/events"))
+        self.assertTrue(dispatcher.calls[-2].endswith("/events"))
+        self.assertTrue(dispatcher.calls[-1].endswith("/close"))
 
     def test_unconfirmed_decision_reports_error(self):
         dispatcher = FakeDispatcher(["Blau"])

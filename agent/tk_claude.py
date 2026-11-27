@@ -188,6 +188,10 @@ def drive(session, state, name, options, deadline, wait, output=None, batch=None
             journal(state, {"output": output})
             if output["status"] == "done":
                 call(f"/sessions/{session}/events", {"id": str(uuid4()), "kind": "complete"}, deadline)
+                try:
+                    api(f"/sessions/{session}/close", {})
+                except (URLError, OSError):
+                    pass
                 return output["summary"]
             questions = [{"id": str(uuid4()), "prompt": q} for q in output["questions"]]
             batch = {"id": str(uuid4()), "summary": (output["summary"] or name)[:2000], "questions": questions}

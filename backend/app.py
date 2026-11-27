@@ -186,6 +186,14 @@ def upsert(data: SessionInput):
         return dict(owned_session(connection, data.id))
 
 
+@app.post(prefix + "/agent/sessions/{session}/close", dependencies=[Agent])
+def close(session: UUID):
+    with db() as connection:
+        owned_session(connection, session)
+        connection.execute("UPDATE sessions SET closed=1 WHERE id=?", (str(session),))
+        return {"closed": True}
+
+
 @app.post(prefix + "/agent/sessions/{session}/batches", dependencies=[Agent])
 def create_batch(session: UUID, data: BatchInput):
     document = data.model_dump_json(exclude={"id"})
@@ -240,10 +248,11 @@ def acknowledge(session: UUID, decision: UUID):
 
 
 @app.get(prefix + "/sessions", dependencies=[User])
-def sessions():
+def sessions(all: bool = False):
     with db() as connection:
         return [dict(row) for row in connection.execute(
-            "SELECT id,project,mode,seen FROM sessions WHERE tenant=? AND host=? ORDER BY seen DESC,id", (tenant, host)
+            """SELECT id,project,mode,seen FROM sessions WHERE tenant=? AND host=? AND (closed=0 OR ?)
+               ORDER BY seen DESC,id""", (tenant, host, all)
         )]
 
 
