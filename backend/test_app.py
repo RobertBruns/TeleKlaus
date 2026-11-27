@@ -80,11 +80,14 @@ class RoutingTest(unittest.TestCase):
                                      json={"id": new_id(), "kind": "attention", "detail": "Claude wartet"})
                 self.assertEqual(status.status_code, 200)
                 self.assertEqual(client.get("events", headers=USER).json()[0]["detail"], "Claude wartet")
+                self.assertEqual(client.post(f"agent/sessions/{session}/close", headers=AGENT).status_code, 200)
+                self.assertEqual(client.get("sessions", headers=USER).json(), [])
+                self.assertEqual(len(client.get("sessions?all=true", headers=USER).json()), 1)
                 client.post("devices/register", headers=USER, json={"token": "e"*64, "kind": "voip"})
                 for kind in ("attention", "complete"):
                     client.post(f"agent/sessions/{session}/events", headers=AGENT, json={"id": new_id(), "kind": kind})
                 with db() as connection:
-                    self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 4)
+                    self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 5)
                     queued = connection.execute(
                         "SELECT d.kind, e.kind FROM push_queue q JOIN devices d ON d.token=q.token "
                         "JOIN events e ON e.id=q.event ORDER BY e.seq, d.kind").fetchall()
