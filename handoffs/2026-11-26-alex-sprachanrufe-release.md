@@ -25,4 +25,4 @@ Der Knopf ist damit im Release-Build einkompiliert. Ob er im Xcode-Cloud-Build a
 
 ## Hinweis
 
-`origin/main` und `origin/prod` laufen auseinander: `main` hat `baf21ca` (AGENTS.md/PROJEKT.md), `prod` hat die App-Commits ab `b1a95b1`. Zusammenführung mit Robert abstimmen.
+Seit 27. November 2026 enthält `main` sowohl `baf21ca` (AGENTS.md/PROJEKT.md) als auch alle App-Commits ab `b1a95b1` (Merge `ec25838`). Neue Arbeit läuft laut `PROJEKT.md` auf `main`, `prod` nur auf Anweisung.
