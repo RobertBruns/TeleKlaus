@@ -65,7 +65,7 @@ PY
     trap 'rm -rf "$staging"' EXIT
     mkdir "$staging/Payload"
     ditto "$app" "$staging/Payload/ClaudeRemote.app"
-    ditto -c -k --keepParent "$staging/Payload" "$ipa"
+    ditto -c -k --norsrc --noextattr --noqtn --keepParent "$staging/Payload" "$ipa"
 else
     archive_app
     method=development
